@@ -2,10 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 // const logger = require('./middleware/logger');
-
+const connectDB = require('./config/db');
 dotenv.config({path:'./config/config.env'});
 const app = express();
 const bootcamps = require('./routes/bootcamps');
+
+
+// Connect the Database
+connectDB();
 
 // Logging using morgan
 if(process.env.NODE_ENV === 'development'){
