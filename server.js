@@ -6,6 +6,8 @@ const colors = require('colors');
 const connectDB = require('./config/db');
 dotenv.config({path:'./config/config.env'});
 const app = express();
+app.use(express.json());
+
 const bootcamps = require('./routes/bootcamps');
 
 
