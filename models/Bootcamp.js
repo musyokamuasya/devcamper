@@ -6,7 +6,7 @@ const BootcampSchema = new mongoose.Schema({
         required: [true, 'Bootcamp should have a name'],
         unique:true,
         trim: true,
-        maxlength:[50, 'Eneter a name of not more than 50 characters']
+        maxlength:[50, 'Enter a name of upto 50 characters']
 
     },
     slug: String,
@@ -15,7 +15,7 @@ const BootcampSchema = new mongoose.Schema({
         required: [true, 'Describe what the bootcamp does'],
         unique:false,
         trim: false,
-        maxlength:[500, 'Eneter a short description of not more than 500 characters']
+        maxlength:[500, 'Enter a short description of upto 500 characters']
     },
     website: {
         type: String,
@@ -34,7 +34,7 @@ const BootcampSchema = new mongoose.Schema({
     },
     address:{
         type:String,
-        required:[true, 'Add your address']
+        required:[true, 'Your address is required']
     },
     location: {
         type: {
@@ -69,8 +69,8 @@ const BootcampSchema = new mongoose.Schema({
     },
     averageRating:{
         type:Number,
-        min:[1, 'Rate between 1 and 10'],
-        max:[10, 'Rate between 1 and 10']
+        min:[1, 'Minimum rating is 1'],
+        max:[10, 'Maximum rating is 10']
     },
 
     averageCost:Number,
