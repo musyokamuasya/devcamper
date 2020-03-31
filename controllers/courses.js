@@ -1,7 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-const geocoder = require('../utils/geocoder');
 const Course = require('../models/Course');
+const Bootcamp = require('../models/Bootcamp');
 
 // @desc    Get Courses
 // @route   GET api/v1/courses
@@ -27,4 +27,41 @@ exports.getCourses = asyncHandler (async (req, res, next)=>{
         count: courses.length, 
         data: courses
     });
+});
+
+// @desc    Get Course
+// @route   GET api/v1/course/:id
+// @access  Public
+
+exports.getCourse = asyncHandler( async (req, res, next)=>{
+    
+    const course = await Course.findById(req.params.id).populate({
+        path: 'bootcamp',
+        select: 'name description'
+    });
+    res.status(200).json({success: true, data: course});
+
+    if (!course) {
+        next (new ErrorResponse(`No course with id of ${req.params.id} was found`, 404));
+    }
+});
+
+// @desc    Create Course
+// @route   GET api/v1/bootcamps/:bootcampId/courses
+// @access  Private
+
+exports.createCourse = asyncHandler( async (req, res, next)=>{
+    req.body.bootcamp = req.params.bootcampId;
+    
+    const bootcamp = await Bootcamp.findById(req.params.bootcampId).populate({
+        path: 'bootcamp',
+        select: 'name description'
+    });
+
+    const course = await Course.create(req.body);
+    res.status(200).json({success: true, data: course});
+
+    if (!bootcamp) {
+        next (new ErrorResponse(`No bootcamp with id of ${req.params.bootcampId} was found`, 404));
+    }
 });
