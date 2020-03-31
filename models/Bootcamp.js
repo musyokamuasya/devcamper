@@ -130,6 +130,13 @@ this.address = undefined;
     next();
 });
 
+// Cascade delete courses in a particular bootcamp when the bootcamp is deleted
+BootcampSchema.pre('remove', async function(next){
+    console.log(`Courses being removed from db ${this._id}`);
+    await this.model('Course').deleteMany({ bootcamp: this._id});
+    next();
+});
+
 // Create virtuals on the schema
 //The virtuals won't be persisted on the database
 
