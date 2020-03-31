@@ -101,6 +101,10 @@ const BootcampSchema = new mongoose.Schema({
         default:Date.now
     },
 
+},
+{
+    toJSON: { virtuals: true},
+    toObject: {virtuals: true}
 });
 BootcampSchema.pre('save', function(next) {
     this.slug = slugify(this.name, {lower:true});
@@ -124,6 +128,16 @@ this.location = {
 };
 this.address = undefined;
     next();
+});
+
+// Create virtuals on the schema
+//The virtuals won't be persisted on the database
+
+BootcampSchema.virtual('courses', {
+    ref: 'Course',
+    localField: '_id',
+    foreignField: 'bootcamp',
+    justOne : false
 });
 
 module.exports = mongoose.model('Bootcamp',BootcampSchema);
