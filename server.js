@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const cookieParcer = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
 // const logger = require('./middleware/logger');
@@ -10,6 +11,7 @@ const connectDB = require('./config/db');
 dotenv.config({path:'./config/config.env'});
 const app = express();
 app.use(express.json());
+app.use(cookieParcer());
 
 const bootcamps = require('./routes/bootcamps');
 const courses = require('./routes/courses');
@@ -21,13 +23,13 @@ connectDB();
 if(process.env.NODE_ENV === 'development'){
     app.use(morgan('dev'));
 }
+// Middlewares
 
 // File upload
 
 app.use(fileupload());
 
 // set static folder for the files
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount Routers
