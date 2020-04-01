@@ -15,7 +15,7 @@ exports.protect = asyncHandler(async (req, res, next) =>{
         // }
         // verify if the token exists
         if (!token) {
-             return next(new ErrorResponse(`Not authorised to access`), 401) ;  
+             return next(new ErrorResponse(`Not authorised to access`, 401)) ;  
         }
 
         //Verify the token
@@ -26,7 +26,16 @@ exports.protect = asyncHandler(async (req, res, next) =>{
 
                 next();
         } catch (error) {
-         return next(new ErrorResponse('Unauthorised access'), 401);     
+         return next(new ErrorResponse('Unauthorised access', 401));     
         }
 
 });
+
+exports.authorize = (...roles) => {
+        return (req, res, next)=>{
+                if (!roles.includes(req.user.role)) {
+                return next(new ErrorResponse(`${req.user.role} is not authorised to perform this task`,  403)) ;       
+                }
+                next();
+        };
+};
