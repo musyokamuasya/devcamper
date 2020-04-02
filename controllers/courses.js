@@ -49,18 +49,28 @@ exports.getCourse = asyncHandler( async (req, res, next)=>{
 
 exports.createCourse = asyncHandler( async (req, res, next)=>{
     req.body.bootcamp = req.params.bootcampId;
+    req.body.user = req.user.id;
     
     const bootcamp = await Bootcamp.findById(req.params.bootcampId).populate({
         path: 'bootcamp',
         select: 'name description'
     });
 
-    const course = await Course.create(req.body);
-    res.status(200).json({success: true, data: course});
+    // Check if the bootcamp
 
     if (!bootcamp) {
         next (new ErrorResponse(`No bootcamp with id of ${req.params.bootcampId} was found`, 404));
     }
+
+    // Check the ownership of the bootcamp
+
+    if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        next (new ErrorResponse(`The current user with id ${req.user.id} is not allowed to add course to bootcamp ${bootcamp._id}`, 401));
+    }
+    
+
+    const course = await Course.create(req.body);
+    res.status(200).json({success: true, data: course});
 });
 
 // @desc    Update Course
@@ -75,6 +85,13 @@ exports.updateCourse = asyncHandler( async (req, res, next)=>{
     if (!course) {
         next (new ErrorResponse(`No course with id of ${req.params.id} was found`, 404));
     }
+
+    // Check the ownership of the bootcamp
+
+    if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        next (new ErrorResponse(`The current user with id ${req.user.id} is not allowed to edit course in ${course._id}`, 401));
+    }
+    
     course = await Course.findByIdAndUpdate(req.params.id, req.body, {
         new:true,
         runValidators: true
@@ -92,7 +109,15 @@ exports.deleteCourse = asyncHandler( async (req, res, next)=>{
   
       if (!course) {
           next (new ErrorResponse(`No course with id of ${req.params.id} was found`, 404));
+
       }
+
+      // Check the ownership of the bootcamp
+
+    if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        next (new ErrorResponse(`The current user with id ${req.user.id} is not allowed to delete course ${course._id}`, 401));
+    }
+    
      await course.remove();
       res.status(200).json({success: true, data: {}});
   });
