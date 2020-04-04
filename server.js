@@ -3,7 +3,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
-const mongoSanitize = require('express-mongo-sanitize')
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet  = require('helmet');
+const xssClean = require('xss-clean');
 const cookieParcer = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
@@ -22,7 +24,16 @@ const reviews = require('./routes/reviews');
 
 // Connect the Database
 connectDB();
+
+// Security
+// Mongo sanitize
 app.use(mongoSanitize());
+
+// Helmet
+app.use(helmet());
+
+// XSS-clean to prevent cross site scripting
+app.use(xssClean());
 
 // Logging using morgan
 if(process.env.NODE_ENV === 'development'){
