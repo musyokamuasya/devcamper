@@ -6,6 +6,8 @@ const colors = require('colors');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet  = require('helmet');
 const xssClean = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
 const cookieParcer = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
@@ -34,6 +36,17 @@ app.use(helmet());
 
 // XSS-clean to prevent cross site scripting
 app.use(xssClean());
+
+// Rate limit
+const limiter = rateLimit({ 
+    windowMs: 10 * 60 * 10000, //100 requests per minute
+    max: 100
+ });
+
+ app.use(limiter);
+
+//  Prevent http param polluter
+app.use(hpp());
 
 // Logging using morgan
 if(process.env.NODE_ENV === 'development'){
