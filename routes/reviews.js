@@ -3,7 +3,9 @@ const express =  require('express');
 const { 
     getReviews,
     getReview,
-    createReview
+    createReview,
+    updateReview,
+    deleteReview
     
 } = require('../controllers/reviews');
 const {protect, authorize} = require('../middleware/auth');
@@ -18,6 +20,6 @@ router.route('/').get(advancedResults (Review, {
     select: 'name description'
 }) ,getReviews).post(protect, authorize ('user', 'admin'), createReview);
 
-router.route('/:id').get(getReview);
+router.route('/:id').get(getReview).put(protect, authorize('admin', 'user'), updateReview).delete(protect, authorize('admin', 'user'), deleteReview);
 
 module.exports = router;

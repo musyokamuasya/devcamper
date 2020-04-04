@@ -70,7 +70,7 @@ ReviewSchema.post('save', function(){
 });
 // Call average cost method before remove
 
-CourseSchema.pre('remove', function(){
+ReviewSchema.pre('remove', function(){
     this.constructor.getAverageReview(this.bootcamp);
 });
 

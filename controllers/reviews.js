@@ -71,3 +71,57 @@ const review = Review.create(req.body);
    });
      
    });
+
+// @desc    update review
+// @route   PUT api/v1/reviews
+// @access  Private
+
+exports.updateReview = asyncHandler (async (req, res, next)=>{
+
+   let review = await Review.findById(req.params.id);
+   
+   if (!review) {
+      next(new ErrorResponse(`No review found with the id ${req.params.id}`, 404));
+   }
+
+   // Ensure the review belongs to the user updating/ the user in an admin
+
+   if (review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return next(new ErrorResponse(`The ${req.user.role} with id ${req.user.id} is not allowed to modify this rating`, 401));
+   }
+   review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+   });
+   res.status(200).json({
+      success: true,
+      count: review.length,
+      data: review
+    });
+     
+   });
+
+// @desc    Delete review
+// @route   DELETE api/v1/reviews
+// @access  Private
+
+exports.deleteReview = asyncHandler (async (req, res, next)=>{
+
+   const review = await Review.findById(req.params.id);
+   
+   if (!review) {
+      next(new ErrorResponse(`No review found with the id ${req.params.id}`, 404));
+   }
+
+   // Ensure the review belongs to the user updating/ the user in an admin
+
+   if (review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return next(new ErrorResponse(`The ${req.user.role} with id ${req.user.id} is not allowed to delete this rating`, 401));
+   }
+   await review.remove();
+   res.status(200).json({
+      success: true,
+      data: {}
+    });
+     
+   });
