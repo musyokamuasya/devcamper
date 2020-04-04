@@ -4,7 +4,7 @@ const ReviewSchema = new mongoose.Schema({
     title: {
         type: String,
         trim: true,
-        required: [true, 'Reviewitle for the review'],
+        required: [true, 'Provide a title for the review'],
         maxlength: 100
     },
     text: {
@@ -34,39 +34,44 @@ const ReviewSchema = new mongoose.Schema({
     }
 
 });
+// Limit one review per user per bootcamp
+
+ReviewSchema.index({ bootcamp:1, user:1 }, { unique:true });
+
+
 // // Static method to calculate the average tuition cost of the bootcamp
-// CourseSchema.statics.getAverageCost = async function(bootcampId){
+ReviewSchema.statics.getAverageRating = async function(bootcampId){
     
-//     const obj = await this.aggregate([
-//         {
-//             $match: { bootcamp: bootcampId}
+    const obj = await this.aggregate([
+        {
+            $match: { bootcamp: bootcampId}
 
-//         },
-//         {
-//             $group: {
-//                 _id:'$bootcamp',
-//                 averageCost: { $avg: '$tuition'}
-//             }
-//         }
-//     ]);
+        },
+        {
+            $group: {
+                _id:'$bootcamp',
+                averageCost: { $avg: '$rating'}
+            }
+        }
+    ]);
 
-//     try {
-//         await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
-//                 averageCost: Math.ceil(obj[0].averageCost / 10)*10
-//         });
-//     } catch (err) {
-//         console.error(err);
-//     }
-// };
+    try {
+        await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+                averageRating: obj[0].averageCost 
+        });
+    } catch (err) {
+        console.error(err);
+    }
+};
 
-// // Call average cost method after save
-// CourseSchema.post('save', function(){
-//     this.constructor.getAverageCost(this.bootcamp);
-// });
-// // Call average cost method before remove
+// Call average cost method after save
+ReviewSchema.post('save', function(){
+    this.constructor.getAverageReview(this.bootcamp);
+});
+// Call average cost method before remove
 
-// CourseSchema.pre('remove', function(){
-//     this.constructor.getAverageCost(this.bootcamp);
-// });
+CourseSchema.pre('remove', function(){
+    this.constructor.getAverageReview(this.bootcamp);
+});
 
 module.exports = mongoose.model('Review', ReviewSchema);
