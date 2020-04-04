@@ -8,6 +8,7 @@ const helmet  = require('helmet');
 const xssClean = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
+const cors = require('cors');
 const cookieParcer = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
@@ -47,6 +48,9 @@ const limiter = rateLimit({
 
 //  Prevent http param polluter
 app.use(hpp());
+
+// Cors
+app.use(cors());
 
 // Logging using morgan
 if(process.env.NODE_ENV === 'development'){
