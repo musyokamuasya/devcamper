@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const mongoSanitize = require('express-mongo-sanitize')
 const cookieParcer = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/error');
@@ -21,6 +22,7 @@ const reviews = require('./routes/reviews');
 
 // Connect the Database
 connectDB();
+app.use(mongoSanitize());
 
 // Logging using morgan
 if(process.env.NODE_ENV === 'development'){
